@@ -1,5 +1,6 @@
 import requests
 import json
+import config
 
 url = "https://api-football-v1.p.rapidapi.com/v3/players"
 
