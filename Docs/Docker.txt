@@ -1,0 +1,11 @@
+# Visualiza todos os containers, ativos ou inativos
+sudo docker container ls -a
+
+# Visualiza todas as imagens disponíveis
+sudo docker images ls 
+
+# Comando para para e deletar containers, imagens e volumes com os dados dos containers daquele arquivo Docker Compose
+docker compose down --volumes --rmi all
+
+# Acessa via linha de comando o container específico
+sudo docker container exec -u root -it CONTAINER_ID /bin/bash

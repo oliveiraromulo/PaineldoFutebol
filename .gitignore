@@ -1,2 +1,9 @@
 Serie B 2021/Codigos/*.json
 Serie B 2021/Codigos/Docker.py
+Docs/Airflow/config
+Docs/Airflow/logs
+Docs/Airflow/docker-compose.yaml
+Docs/Airflow/dags/soccer_analytics/config.json
+.vscode
+football_vev
+*.pyc

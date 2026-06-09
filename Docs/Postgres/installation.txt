@@ -1,0 +1,2 @@
+# Comando Docker para a criação do banco de dados
+docker run --name football_analysis -e POSTGRES_PASSWORD=football1234 -p 5432:5432 -d postgres

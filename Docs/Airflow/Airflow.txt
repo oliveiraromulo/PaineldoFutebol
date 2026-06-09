@@ -1,0 +1,27 @@
+mkdir -p ./dags ./logs ./plugins ./config
+echo -e "AIRFLOW_UID=$(id -u)" > .env
+
+AIRFLOW_UID=50000
+
+Setar o parametro AIRFLOW__CORE__LOAD_EXAMPLES = False, para não carregar DAGS de exemplo.
+
+'''
+ Aqui eu tive muito problema com a versão que já existente do Postgres na minha maquina.
+ Precisei apagar todos os containers e images que tivessem relação com a versão Postgres13.
+ Em conjunto atualizei update e upgrade nas packages do Ubuntu, atualizei a versão do Ubuntu.
+ Mas acho que o mais importante depois de horas foi rodar esse comando:
+ docker compose down --volumes --rmi all
+
+ Esse comando eliminou o conflito de versão. Talvez poderia ter sido usado antes de tudo.
+'''
+sudo docker compose up
+
+Acesso à interface: localhost:8080
+
+# Para conectar um banco externo ao ambiente do Airflow, é necessario adicionar 
+# o banco na network dos containers do Airflow
+sudo docker network connect NETWORK_ID_AIRFLOW CONTAINER_ID/CONTAINER_NAME_DO_BANCO_EXTERNO
+
+# Verificar se o CONTAINER foi adicionado junto dos outros CONTAINERS do Airflow. Agora,
+# para usar internamente via Airflow, é o IP correspondente do CONTAINER nessa network especifica
+sudo docker network inspect  airflow_default
