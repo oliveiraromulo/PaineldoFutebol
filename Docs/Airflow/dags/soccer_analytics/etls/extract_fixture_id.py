@@ -2,7 +2,7 @@ import requests
 import json
 #import argparse
 #import config
-
+from datetime import date
 import psycopg as pg # pyright: ignore[reportMissingImports]
 
 file = open('/opt/airflow/dags/soccer_analytics/config.json')
@@ -12,10 +12,15 @@ args = json.load(file)
 url = "https://api-football-v1.p.rapidapi.com/v3/fixtures"
 
 # Deve ser parametrizado de acordo com a necessidade. Ou processa rodada ou processa temporada inteira.
+season = date.today().strftime("%Y")
+
+print(f"Querying Season {season}")
+
 querystring = {
-#"date":"2021-11-16",
-"league":"71",
-"season":"2023"}
+    #"date":"2021-11-16",
+    "league":"71",
+    "season": season
+}
 
 headers = {
     'x-rapidapi-host': args['x-rapidapi-host'],
@@ -117,7 +122,7 @@ for i in range(len(json_data['response'])):
 
 
 
-#print(results)
+print(results)
 
 insert_query = """INSERT INTO usr_landing.fixtures
 values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
