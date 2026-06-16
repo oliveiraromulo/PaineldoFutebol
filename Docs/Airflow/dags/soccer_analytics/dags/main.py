@@ -67,5 +67,14 @@ with DAG(
         system_site_packages=False
     )
 
+    dimension_round = PythonVirtualenvOperator(
+        task_id="dimension_round",
+        python_callable=run_external_script,
+        op_kwargs={"script_path": "/opt/airflow/dags/soccer_analytics/etls/dimension_round.py"},
+        requirements=['psycopg', 'requests'], #"$AIRFLOW_HOME/dags/soccer_analytics/requirements.txt",
+        system_site_packages=False
+    )
+
+
 [extract_fixture_id, extract_league_id] 
-extract_fixture_id >> extract_fixture_stats
+extract_league_id >> extract_fixture_id >> [extract_fixture_stats, dimension_round]

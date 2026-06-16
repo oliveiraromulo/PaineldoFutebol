@@ -1,7 +1,7 @@
 CREATE TABLE usr_landing.fixture_stats(
 fixture_id varchar(20) NULL,
-team_id varchar(20) NULL,
-team_name varchar(100) NULL,
+home_team_id varchar(20) NULL,
+home_team_name varchar(100) NULL,
 home_shots_on_goal varchar(10) NULL,
 home_shots_off_goal varchar(10) NULL,
 home_total_shots varchar(10) NULL,
