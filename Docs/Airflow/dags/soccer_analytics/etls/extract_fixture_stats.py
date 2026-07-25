@@ -6,6 +6,7 @@ import json
 import psycopg as pg # pyright: ignore[reportMissingImports]
 
 file = open('/opt/airflow/dags/soccer_analytics/config.json')
+#file = open('/home/romulo/Documents/Git/PaineldoFutebol/Serie B 2021/Codigos/config.json')
 args = json.load(file)
 headers = {
     'x-rapidapi-host': args['x-rapidapi-host'],
@@ -41,12 +42,16 @@ query_fixtures = """
     select distinct fixture_id 
     from usr_landing.fixtures fix
     where exists (
-        select 1
-        from usr_landing.leagues lea
-        where fix.league_season = lea.season_year
-        and fix.league_id = lea.league_id
+        select league_id, league_season, league_season
+        from dimension.dim_rounds dim
+        where 1=1
+        --and CURRENT_TIMESTAMP between start_round_date and end_round_date
+        and cast(fix.league_id as int) = dim.league_id
+        and cast(fix.league_season as int) = dim.league_season
+        and fix.league_round = dim.league_round
     )
-    and fix.league_round = 'Regular Season - 1'
+    and cast(fixture_date AS TIMESTAMP ) - INTERVAL '3' HOUR <= current_timestamp
+    and fixture_status_short = 'FT'
 """
 
 conn = pg.connect(args['url_conn'])
@@ -61,10 +66,11 @@ for fixture in fixtures_ids:
     
     result_list.append(extract_fixtures_stats(url, headers, querystring, fixture[0]))
 
-print(result_list)
+#print(result_list)
 
 insert_query = """INSERT INTO usr_landing.fixture_stats 
-values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
+        %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
 """
 
 cur.executemany(insert_query, result_list)

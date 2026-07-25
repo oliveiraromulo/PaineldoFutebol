@@ -108,7 +108,12 @@ def extract_fixture_id(url, headers, querystring) -> list:
 
 
 query_league = f"""
-    select league_id, season_year
+    select 
+        league_id,
+        league_name,
+        country_name,
+        season_year, 
+        row_number() over(partition by league_id order by season_year, created_at desc) row_num
     from usr_landing.leagues
     where cast(season_start as date) <= current_date
     or cast(season_end as date) >= current_date
@@ -124,8 +129,10 @@ for league in leagues:
     querystring = {
         #"date":"2021-11-16",
         "league": f"{league[0]}",
-        "season": f"{league[1]}"
+        "season": f"{league[3]}"
     }
+
+    print("Extracting fixtures from : ", league[1], " - ", league[2], " and season: ", league[3])
 
     print(querystring)
 
@@ -134,9 +141,6 @@ for league in leagues:
     insert_query = """INSERT INTO usr_landing.fixtures
     values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
             %s, %s, %s, %s, %s, %s, %s, %s)"""
-
-    conn = pg.connect(args['url_conn'])
-    cur = conn.cursor()
 
     cur.executemany(insert_query, fixtures)
 

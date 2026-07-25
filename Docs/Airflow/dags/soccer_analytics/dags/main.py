@@ -29,7 +29,7 @@ with DAG(
     },
     description="Workflow for extracting, transforming, and loading soccer analytics data",
     schedule=timedelta(days=1),
-    start_date=datetime(2021, 1, 1),
+    start_date=datetime(2026, 6, 1),
     catchup=False,
     tags=["example"],
 ) as dag:
@@ -75,6 +75,15 @@ with DAG(
         system_site_packages=False
     )
 
+    dimension_countries = PythonVirtualenvOperator(
+        task_id="dimension_countries",
+        python_callable=run_external_script,
+        op_kwargs={"script_path": "/opt/airflow/dags/soccer_analytics/etls/dimension_countries.py"},
+        requirements=['psycopg', 'requests'], #"$AIRFLOW_HOME/dags/soccer_analytics/requirements.txt",
+        system_site_packages=False
+    )
+
 
 [extract_fixture_id, extract_league_id] 
-extract_league_id >> extract_fixture_id >> [extract_fixture_stats, dimension_round]
+extract_league_id >> extract_fixture_id >> [dimension_round, dimension_countries]
+dimension_round >> extract_fixture_stats
