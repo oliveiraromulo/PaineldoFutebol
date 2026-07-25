@@ -8,7 +8,6 @@ import psycopg as pg
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 
-#file = open('/home/romulo/Documents/Git/PaineldoFutebol/Serie B 2021/Codigos/config.json')
 file = open('/opt/airflow/dags/soccer_analytics/config.json')
 
 args = json.load(file)
@@ -70,14 +69,14 @@ query_fixtures = """
         select league_id, league_season, league_season
         from dimension.dim_rounds dim
         where 1=1
-        --and CURRENT_TIMESTAMP between start_round_date and end_round_date
-        and start_round_date >= current_timestamp - interval '30' DAY
+        and CURRENT_TIMESTAMP between start_round_date and end_round_date
+        --and start_round_date >= current_timestamp - interval '30' DAY
         and cast(fix.league_id as int) = dim.league_id
         and cast(fix.league_season as int) = dim.league_season
         and fix.league_round = dim.league_round
     )
     and cast(fixture_date AS TIMESTAMP ) - INTERVAL '3' HOUR <= current_timestamp
-    and fixture_status_short = 'FT'
+    and fixture_status_short != 'NS'
 """
 
 conn = pg.connect(args['url_conn'])
@@ -86,20 +85,24 @@ cur = conn.cursor()
 cur.execute(query_fixtures)
 fixtures_ids = cur.fetchall()
 
-result_list = []
-for fixture in fixtures_ids:   
-    querystring = {"fixture": fixture[0]}
+if len(fixtures_ids) == 0:
+    print("No fixtures found for the last round of the championship.")
 
-    returned_result = extract_fixtures_stats(url, headers, querystring, fixture[0])
-    if returned_result is not None:
-        result_list.append(returned_result)
+else:
+    result_list = []
+    for fixture in fixtures_ids:   
+        querystring = {"fixture": fixture[0]}
 
-insert_query = """INSERT INTO usr_landing.fixture_stats 
-values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
-        %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-"""
+        returned_result = extract_fixtures_stats(url, headers, querystring, fixture[0])
+        if returned_result is not None:
+            result_list.append(returned_result)
 
-cur.executemany(insert_query, result_list)
+    insert_query = """INSERT INTO usr_landing.fixture_stats 
+    values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
+            %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+    """
+
+    cur.executemany(insert_query, result_list)
 
 conn.commit()
 conn.close()
