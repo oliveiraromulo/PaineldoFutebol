@@ -1,4 +1,5 @@
-CREATE TABLE usr_landing.leagues(
+CREATE TABLE dimension.dim_leagues(
+pk_leagues integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 4000 CACHE 1 ),
 league_id varchar(50) NULL,
 league_name varchar(100) NULL,
 league_type varchar(50) NULL,

@@ -21,5 +21,6 @@ season_coverage_top_assists varchar(100) NULL,
 season_coverage_top_cards varchar(100) NULL,
 season_coverage_injuries varchar(100) NULL,
 season_coverage_predictions varchar(100) NULL,
-season_coverage_odds varchar(100) NULL
+season_coverage_odds varchar(100) NULL,
+created_at TIMESTAMP DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'UTC+3')
 );

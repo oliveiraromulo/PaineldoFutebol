@@ -2,11 +2,15 @@ import requests
 import json
 #import argparse
 #import config
-from datetime import date
+from datetime import datetime
 import psycopg as pg # pyright: ignore[reportMissingImports]
+from auxiliar_funcs import upload_file_to_volume, get_api_credentials
+import os
+'''
+    Reading configuration files and setting headers for API requests and databases
+'''
+args = get_api_credentials('prd') # or 'dev' depending on the environment
 
-file = open('/opt/airflow/dags/soccer_analytics/config.json')
-args = json.load(file)
 headers = {
     'x-rapidapi-host': args['x-rapidapi-host'],
     'x-rapidapi-key': args['x-rapidapi-key']
@@ -137,6 +141,26 @@ for league in leagues:
     print(querystring)
 
     fixtures = extract_fixture_id(url, headers, querystring)
+
+    '''
+        Sending files to Databricks volume
+    '''
+    filename = "fixtures_id_{}.json".format(datetime.now().strftime("%Y%m%d_%H%M%S"))
+
+    with open(f"/opt/airflow/{filename}", "w") as json_file:
+        json.dump(fixtures, json_file)
+
+    print("Listing files in local before sending to Databricks volume: ", os.listdir("/opt/airflow/"))
+
+    upload_file_to_volume(local_file_path=f"/opt/airflow/{filename}",
+                            catalog='footballdb',
+                            volume='jsonfiles',
+                            folder='fixtures',
+                            filename=filename)
+
+    '''
+        Writing fixtures to Postgres database
+    '''
 
     insert_query = """INSERT INTO usr_landing.fixtures
     values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
