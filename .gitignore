@@ -7,5 +7,9 @@ Docs/Airflow/dags/soccer_analytics/config.json
 .vscode
 football_vev
 *.pyc
+Databricks/config.json
+Databricks/configDatabricks.json
+Docs/databricks.txt
+Docs/Airflow/dags/soccer_analytics/config*.json
 /Workspace/Users/spcoromulo@gmail.com/PaineldoFutebol/Databricks/config.json
 /Workspace/Users/spcoromulo@gmail.com/PaineldoFutebol/Databricks/configDatabricks.json

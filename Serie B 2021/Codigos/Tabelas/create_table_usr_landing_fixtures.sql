@@ -37,5 +37,6 @@ score_fulltime_away varchar(150) NULL,
 score_extratime_home varchar(150) NULL,
 score_extratime_away varchar(150) NULL,
 score_penalty_home varchar(150) NULL,
-score_penalty_away varchar(150) NULL
+score_penalty_away varchar(150) NULL,
+created_at TIMESTAMP DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'UTC+3')
 );

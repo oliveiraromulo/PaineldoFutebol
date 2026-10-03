@@ -34,15 +34,31 @@ with DAG(
     catchup=False,
     tags=["example"],
 ) as dag:
+    #execute_script = BashOperator(
+    #    task_id="extract_fixture_id",
+    #    # Use AIRFLOW_HOME or absolute paths to prevent "file not found" errors
+    #    bash_command="""
+    #    pip install -r $AIRFLOW_HOME/dags/soccer_analytics/requirements.txt && \
+    #    python $AIRFLOW_HOME/dags/soccer_analytics/etls/extract_fixture_id.py
+    #    """, 
+    #)
 
-    extract_fixture_id = BashOperator(
+    extract_fixture_id = PythonVirtualenvOperator(
         task_id="extract_fixture_id",
-        # Use AIRFLOW_HOME or absolute paths to prevent "file not found" errors
-        bash_command="""
-        pip install -r $AIRFLOW_HOME/dags/soccer_analytics/requirements.txt && \
-        python $AIRFLOW_HOME/dags/soccer_analytics/etls/extract_fixture_id.py
-        """,
+        python_callable=run_external_script,
+        op_kwargs={"script_path": "/opt/airflow/dags/soccer_analytics/etls/extract_fixture_id.py"},
+        requirements=['psycopg', 'requests'], #"$AIRFLOW_HOME/dags/soccer_analytics/requirements.txt",
+        system_site_packages=False
     )
+
+    #extract_league_id = PythonVirtualenvOperator(
+    #    task_id="extract_league_id",
+    #    python_callable=run_external_script,
+    #    op_kwargs={"script_path": "/opt/airflow/dags/soccer_analytics/etls/extract_league_id.py",
+    #               "databricks_env": "{{var.json.databricks_env_values}}"},
+    #    requirements=['psycopg', 'requests', 'databricks-sdk'], #"$AIRFLOW_HOME/dags/soccer_analytics/requirements.txt",
+    #    system_site_packages=False
+    #)
 
     extract_league_id = BashOperator(
         task_id="extract_league_id",

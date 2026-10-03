@@ -1,0 +1,28 @@
+CREATE TABLE dimension.dim_leagues(
+pk_leagues integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 4000 CACHE 1 ),
+league_id varchar(8) NULL,
+league_name varchar(100) NULL,
+league_type varchar(30) NULL,
+league_logo varchar(500) NULL,
+country_name varchar(50) NULL,
+country_code varchar(4) NULL,
+country_flag varchar(200) NULL,
+season_year varchar(4) NULL,
+season_start DATE NULL,
+season_end DATE NULL,
+season_current boolean NULL,
+season_coverage_fixtures_events boolean NULL,
+season_coverage_fixtures_lineups boolean NULL,
+season_coverage_fixtures_statistics_fixtures boolean NULL,
+season_coverage_fixtures_statistics_players boolean NULL,
+season_coverage_stadings boolean NULL,
+season_coverage_players boolean NULL,
+season_coverage_top_scorers boolean NULL,
+season_coverage_top_assists boolean NULL,
+season_coverage_top_cards boolean NULL,
+season_coverage_injuries boolean NULL,
+season_coverage_predictions boolean NULL,
+season_coverage_odds boolean NULL,
+created_at TIMESTAMP DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'UTC+3')
+updated_at TIMESTAMP DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'UTC+3')
+);

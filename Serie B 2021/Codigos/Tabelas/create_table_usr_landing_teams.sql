@@ -11,5 +11,6 @@ venue_address varchar(150) NULL,
 venue_city varchar(150) NULL,
 venue_capacity varchar(150) NULL,
 venue_surface varchar(150) NULL,
-venue_image varchar(150) NULL
+venue_image varchar(150) NULL,
+created_at TIMESTAMP DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'UTC+3')
 );
